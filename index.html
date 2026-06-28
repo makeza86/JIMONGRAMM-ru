@@ -487,11 +487,30 @@
           </div>
           <div class="form-field">
             <label class="form-label" for="m-country">Страна</label>
-            <input class="form-input" id="m-country" placeholder="Казахстан">
+            <select class="form-input" id="m-country" onchange="updateCities('m')">
+              <option value="">Выберите страну</option>
+            <option value="Россия">Россия</option>
+            <option value="Казахстан">Казахстан</option>
+            <option value="Кыргызстан">Кыргызстан</option>
+            <option value="Узбекистан">Узбекистан</option>
+            <option value="Таджикистан">Таджикистан</option>
+            <option value="Беларусь">Беларусь</option>
+            <option value="Армения">Армения</option>
+            <option value="Азербайджан">Азербайджан</option>
+            <option value="Грузия">Грузия</option>
+            <option value="Молдова">Молдова</option>
+            <option value="Монголия">Монголия</option>
+            <option value="Турция">Турция</option>
+            <option value="Другая">Другая страна</option>
+            </select>
+            <input class="form-input" id="m-country-custom" placeholder="Укажите страну" style="display:none; margin-top:8px;">
           </div>
           <div class="form-field">
             <label class="form-label" for="m-city">Город</label>
-            <input class="form-input" id="m-city" placeholder="Алматы">
+            <select class="form-input" id="m-city" onchange="checkCustomCity('m')">
+              <option value="">Сначала выберите страну</option>
+            </select>
+            <input class="form-input" id="m-city-custom" placeholder="Укажите город" style="display:none; margin-top:8px;">
           </div>
           <div class="form-field">
             <label class="form-label" for="m-phone-code">Код страны</label>
@@ -562,11 +581,30 @@
         </div>
         <div class="form-field">
           <label class="form-label" for="mm-country">Страна</label>
-          <input class="form-input" id="mm-country" placeholder="Казахстан">
+          <select class="form-input" id="mm-country" onchange="updateCities('mm')">
+            <option value="">Выберите страну</option>
+            <option value="Россия">Россия</option>
+            <option value="Казахстан">Казахстан</option>
+            <option value="Кыргызстан">Кыргызстан</option>
+            <option value="Узбекистан">Узбекистан</option>
+            <option value="Таджикистан">Таджикистан</option>
+            <option value="Беларусь">Беларусь</option>
+            <option value="Армения">Армения</option>
+            <option value="Азербайджан">Азербайджан</option>
+            <option value="Грузия">Грузия</option>
+            <option value="Молдова">Молдова</option>
+            <option value="Монголия">Монголия</option>
+            <option value="Турция">Турция</option>
+            <option value="Другая">Другая страна</option>
+          </select>
+          <input class="form-input" id="mm-country-custom" placeholder="Укажите страну" style="display:none; margin-top:8px;">
         </div>
         <div class="form-field">
           <label class="form-label" for="mm-city">Город</label>
-          <input class="form-input" id="mm-city" placeholder="Алматы">
+          <select class="form-input" id="mm-city" onchange="checkCustomCity('mm')">
+            <option value="">Сначала выберите страну</option>
+          </select>
+          <input class="form-input" id="mm-city-custom" placeholder="Укажите город" style="display:none; margin-top:8px;">
         </div>
         <div class="form-field">
           <label class="form-label" for="mm-phone-code">Код страны</label>
@@ -682,6 +720,38 @@ if (new URLSearchParams(window.location.search).get('openModal') === '1') {
   window.history.replaceState({}, '', '/');
 }
 
+const CITIES = {
+  "Россия": ["Москва","Санкт-Петербург","Новосибирск","Екатеринбург","Казань","Нижний Новгород","Краснодар","Уфа","Самара","Ростов-на-Дону","Челябинск","Омск","Воронеж","Красноярск","Другой город"],
+  "Казахстан": ["Алматы","Астана","Шымкент","Караганда","Актобе","Тараз","Павлодар","Усть-Каменогорск","Другой город"],
+  "Кыргызстан": ["Бишкек","Ош","Джалал-Абад","Каракол","Другой город"],
+  "Узбекистан": ["Ташкент","Самарканд","Бухара","Андижан","Другой город"],
+  "Таджикистан": ["Душанбе","Худжанд","Бохтар","Другой город"],
+  "Беларусь": ["Минск","Гомель","Витебск","Могилёв","Другой город"],
+  "Армения": ["Ереван","Гюмри","Другой город"],
+  "Азербайджан": ["Баку","Гянджа","Другой город"],
+  "Грузия": ["Тбилиси","Батуми","Другой город"],
+  "Молдова": ["Кишинёв","Бельцы","Другой город"],
+  "Монголия": ["Улан-Батор","Другой город"],
+  "Турция": ["Стамбул","Анкара","Анталья","Другой город"],
+  "Другая": ["Другой город"]
+};
+function updateCities(prefix){
+  const country = document.getElementById(prefix+'-country').value;
+  const citySelect = document.getElementById(prefix+'-city');
+  const countryCustom = document.getElementById(prefix+'-country-custom');
+  countryCustom.style.display = (country === 'Другая') ? 'block' : 'none';
+  citySelect.innerHTML = '<option value="">Выберите город</option>';
+  (CITIES[country] || []).forEach(c=>{
+    const opt = document.createElement('option'); opt.value = c; opt.textContent = c;
+    citySelect.appendChild(opt);
+  });
+  checkCustomCity(prefix);
+}
+function checkCustomCity(prefix){
+  const city = document.getElementById(prefix+'-city').value;
+  document.getElementById(prefix+'-city-custom').style.display = (city === 'Другой город') ? 'block' : 'none';
+}
+
 async function sendLead(data){
   try{
     await fetch(CONFIG.webhookUrl, {
@@ -694,8 +764,10 @@ async function sendLead(data){
 async function submitModalLead(){
   const status = document.getElementById('mm-status').value;
   const name = document.getElementById('mm-name').value.trim();
-  const country = document.getElementById('mm-country').value.trim();
-  const city = document.getElementById('mm-city').value.trim();
+  let country = document.getElementById('mm-country').value;
+  if(country === 'Другая') country = document.getElementById('mm-country-custom').value.trim();
+  let city = document.getElementById('mm-city').value;
+  if(city === 'Другой город') city = document.getElementById('mm-city-custom').value.trim();
   const phoneCode = document.getElementById('mm-phone-code').value.replace('kz','');
   const phone = document.getElementById('mm-phone').value.trim();
   const method = document.getElementById('mm-method').value;
@@ -719,8 +791,10 @@ async function submitModalLead(){
 async function submitLead(){
   const status = document.getElementById('m-status').value;
   const name = document.getElementById('m-name').value.trim();
-  const country = document.getElementById('m-country').value.trim();
-  const city = document.getElementById('m-city').value.trim();
+  let country = document.getElementById('m-country').value;
+  if(country === 'Другая') country = document.getElementById('m-country-custom').value.trim();
+  let city = document.getElementById('m-city').value;
+  if(city === 'Другой город') city = document.getElementById('m-city-custom').value.trim();
   const phoneCode = document.getElementById('m-phone-code').value.replace('kz','');
   const phone = document.getElementById('m-phone').value.trim();
   const method = document.getElementById('m-method').value;
